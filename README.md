@@ -32,22 +32,24 @@ Projeto real de automação completa da **SRS Corretora** — uma corretora de s
 ---
 
 ## 🔄 Fluxo completo de automação
-
-```
 Cliente preenche formulário no site
-             ↓
-       Make (automação)
-        ↓           ↓
- HubSpot CRM    Planilha Google Sheets
-        ↓
- Venda fechada no HubSpot
-        ↓
- Cliente migra para planilha
-        ↓
- Alertas automáticos de renovação
- e aniversário por e-mail
+↓
+Make (automação)
+↓           ↓
+HubSpot CRM    Planilha Google Sheets
+↓
+Venda fechada no HubSpot
+↓
+Cliente migra para planilha
+↓
+Alertas automáticos de renovação
+e aniversário por e-mail
+
+---
 
 ## 🛠️ Tecnologias utilizadas
+O problema é que faltava o --- depois do bloco de código para separar as seções. Faz o commit com:
+fix: corrige formatação do README
 
 | Ferramenta | Uso |
 |---|---|
