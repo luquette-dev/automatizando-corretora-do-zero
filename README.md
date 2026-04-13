@@ -32,19 +32,20 @@ Projeto real de automação completa da **SRS Corretora** — uma corretora de s
 ---
 
 ## 🔄 Fluxo completo de automação
-Cliente preenche formulário no site
-↓
-Make (automação)
-↓         ↓
-HubSpot CRM   Planilha Google Sheets
-↓
-Venda fechada no HubSpot
-↓
-Cliente migra para planilha de clientes
-↓
-Alertas automáticos de renovação e aniversário por e-mail
 
----
+```
+Cliente preenche formulário no site
+             ↓
+       Make (automação)
+        ↓           ↓
+ HubSpot CRM    Planilha Google Sheets
+        ↓
+ Venda fechada no HubSpot
+        ↓
+ Cliente migra para planilha
+        ↓
+ Alertas automáticos de renovação
+ e aniversário por e-mail
 
 ## 🛠️ Tecnologias utilizadas
 
