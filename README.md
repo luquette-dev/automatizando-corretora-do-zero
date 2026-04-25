@@ -12,6 +12,9 @@ Projeto real de automação completa da **SRS Corretora** — uma corretora de s
 - **Alertas de aniversário** dos clientes enviados automaticamente por e-mail
 - Quando uma venda é fechada no HubSpot, o cliente **cai automaticamente na planilha**
 - Dashboard com visão geral da carteira
+- Sistema de score de oportunidades com ARRAYFORMULA, pontuando clientes por vencimento, aniversário e
+inadimplência
+- Aba de Radar de Concorrência monitorando anúncios e estratégias de corretoras concorrentes
 - Tudo construído com **Google Apps Script**
 
 ### 🔗 Integrações via Make
