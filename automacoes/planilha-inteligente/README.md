@@ -126,8 +126,8 @@ Gera automaticamente links da Biblioteca de Anúncios do Facebook e perfil do In
 
 ## 📸 Dashboard
 
-![Dashboard Cross-Sell](dashboard-crossell_1.png)
-![Dashboard Faturamento](dashboard-faturamento_1.png)
+![Dashboard Cross-Sell](images/dashboard-crossell_1.png)
+![Dashboard Faturamento](images/dashboard-faturamento_1.png)
 
 ---
 
