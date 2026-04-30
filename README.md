@@ -23,14 +23,46 @@ inadimplência
 - Zero trabalho manual em nenhuma etapa do funil
 
 ### 🌐 Site SRS Corretora *(em construção)*
-- Site institucional moderno e responsivo
-- Landing pages individuais para cada produto:
-  - Seguro Auto
-  - Plano de Saúde
-  - Consórcio
-- Formulários de captação integrados ao HubSpot e Google Sheets via Make
-- Botão direto para WhatsApp em todos os serviços
-- Link de compra direta pela Porto Seguro com comissão automática
+
+O site foi dividido em quatro pilares principais para facilitar a navegação do cliente e a conversão de leads:
+
+### 👤 Para Você
+Soluções completas para proteger o que é importante para o indivíduo e sua família.
+
+| | | |
+| :--- | :--- | :--- |
+| 🚗 Seguro Auto | 🏠 Seguro Residencial | ✈️ Seguro Viagem |
+| 💰 Consórcio | 📱 Equip. Portáteis | 🚴 Seguro Bike |
+| 🩺 Seguro Saúde | 🦷 Odontológico | 🐕 Seguro Pet |
+| 🧬 Seguro de Vida | 🩹 Acidentes Pessoais | 🏍️ Seguro de Moto |
+| 🔑 Fiança Locatícia | 🚜 Seguro Rural | 🎓 Educacional |
+| 📈 Previdência | | |
+
+### 🏢 Para Empresa
+Gestão de riscos e benefícios para negócios de todos os portes.
+
+*   **Pessoas:** Vida Empresarial, Plano de Saúde, Escolar.
+*   **Operacional:** Seguro Frota, Equipamentos, Agrícola.
+*   **Patrimonial:** Empresarial, Condomínio, Aeronáutico, Náutico.
+*   **Garantias:** Responsabilidade Civil, Risco de Engenharia, Seguro Garantia, Fiança Aluguel.
+
+### ✍️ Blog & Social
+Integração direta com o **Instagram** para manter os clientes atualizados sobre o mercado de seguros e dicas de prevenção.
+
+### 📞 Contato
+*   Atendimento humano via **WhatsApp** integrado em todas as páginas.
+*   Formulários inteligentes de captação.
+
+---
+
+## 🛠️ Stack Técnica & Automação
+
+O diferencial deste projeto é o seu **back-end invisível**, focado em produtividade:
+
+*   **Frontend:** HTML5, Tailwind CSS (Design Moderno e Responsivo).
+*   **CRM:** `HubSpot` para gestão de leads em tempo real.
+*   **Dados:** `Google Sheets` para backup e relatórios de performance.
+*   **Conversão:** Links diretos da Porto Seguro com rastreio de comissionamento automático.
 
 ---
 
