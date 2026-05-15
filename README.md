@@ -83,8 +83,6 @@ e aniversário por e-mail
 ---
 
 ## 🛠️ Tecnologias utilizadas
-O problema é que faltava o --- depois do bloco de código para separar as seções. Faz o commit com:
-fix: corrige formatação do README
 
 | Ferramenta | Uso |
 |---|---|
