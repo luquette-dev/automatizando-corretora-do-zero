@@ -1,115 +1,139 @@
 # 🔗 Integrações Make — SRS Corretora
 
-Automações construídas no Make (ex-Integromat) conectando WhatsApp, site, HubSpot CRM e Google Sheets.
+Esse arquivo documenta as automações que construí no Make para conectar WhatsApp, site, HubSpot CRM e Google Sheets numa operação integrada.
+
+O objetivo foi simples: **nenhum lead se perde e nenhuma tarefa depende de alguém lembrar de fazer.**
 
 ---
 
-## 🏗️ Arquitetura Geral
+## Como tudo se conecta
 
 ```
 WhatsApp (Evolution API)
         │
         ▼
-     Make (Fluxo 3)
+   Make — Fluxo 3
         │
-        ├── Novo lead ──────► HubSpot: Cria Contato + Abre Negócio
-        └── Cliente antigo ──► HubSpot: Abre Negócio (vincula ao contato existente)
+        ├── Contato novo ────► HubSpot: cria contato + abre negócio
+        └── Contato existente► HubSpot: abre negócio (vincula ao registro existente)
 
 Formulário do site
         │
         ▼
-     Make (Fluxo 2)
+   Make — Fluxo 2
         │
-        ├──────────────────► HubSpot CRM (novo lead)
-        └──────────────────► Google Sheets (aba leads)
+        ├────────────────────► HubSpot CRM (novo lead)
+        └────────────────────► Google Sheets (aba leads)
 
-HubSpot CRM (Venda Fechada)
+HubSpot CRM — venda fechada
         │
         ▼
-     Make (Fluxo 1)
+   Make — Fluxo 1
         │
         ▼
-  Google Sheets (nova linha em "Todos os clientes")
+  Google Sheets ("Todos os clientes")
         │
         ▼
-  Alertas de renovação + Régua de relacionamento (Apps Script)
+  Alertas de renovação + régua de relacionamento (Apps Script)
 ```
 
 ---
 
-## 🔄 Fluxos Ativos
+## Fluxo 1 — Venda fechada no HubSpot → Planilha
 
-### Fluxo 1 — Venda Fechada no HubSpot → Planilha
-
-Quando um negócio é marcado como **ganho** no HubSpot CRM, o cliente migra automaticamente para a aba de clientes no Google Sheets.
+Quando um negócio é marcado como ganho no HubSpot, o cliente migra automaticamente para a planilha de clientes.
 
 ```
 HubSpot CRM (negócio ganho)
         ↓
-     Make
+      Make
         ↓
 Google Sheets (nova linha em "Todos os clientes")
+        ↓
+Apps Script entra em ação automaticamente:
+  • Calcula comissão
+  • Agenda alerta de renovação 15 dias antes do vencimento
+  • Adiciona cliente ao pipeline de follow-up
+  • Dispara régua de relacionamento
 ```
 
-**Resultado:** zero trabalho manual na migração de lead para cliente. Assim que entra na planilha, os alertas de renovação e a régua de relacionamento já entram em ação automaticamente.
+**Por que isso importa:** antes dessa automação, a migração de lead para cliente era feita manualmente, linha por linha. Agora acontece em segundos, sem nenhuma ação humana — e já com tudo configurado para o pós-venda.
 
 ---
 
-### Fluxo 2 — Formulário do Site → HubSpot + Planilha
+## Fluxo 2 — Formulário do site → HubSpot + Planilha
 
-Quando um visitante preenche o formulário no site da SRS Corretora, o lead entra simultaneamente no CRM e na planilha.
+Quando um visitante preenche o formulário no site, o lead entra simultaneamente no CRM e na planilha.
 
 ```
 Formulário do site (visitante preenche)
         ↓
       Make
-      ↓       ↓
- HubSpot    Google Sheets
-   CRM       (aba leads)
+      ↓         ↓
+ HubSpot     Google Sheets
+  CRM         (aba leads)
 ```
 
-**Resultado:** nenhum lead se perde, tudo centralizado automaticamente.
+**Resultado:** nenhum lead cai no esquecimento. Seja qual for o volume de formulários enviados, tudo chega nos dois lugares ao mesmo tempo.
 
 ---
 
-### Fluxo 3 — WhatsApp → HubSpot CRM *(novo)*
+## Fluxo 3 — WhatsApp → HubSpot (operação normal + campanhas)
 
-Qualquer mensagem recebida de um contato novo no WhatsApp cria automaticamente um lead no HubSpot com nome e número capturados em tempo real.
+Esse foi o fluxo mais complexo de construir e o que mais impacta a operação.
+
+### Funcionamento no dia a dia
+
+Qualquer mensagem recebida de um número novo no WhatsApp cria automaticamente um lead no HubSpot — com nome e telefone capturados em tempo real via Evolution API.
 
 ```
-WhatsApp (Evolution API → messages.upsert)
+WhatsApp (Evolution API — messages.upsert)
         ↓
       Make
         ↓
-   Busca no HubSpot pelo telefone (anti-duplicação)
+   Busca o número no HubSpot
         ↓
-   Router condicional
-        ├── 0 resultados → Cria Contato + Abre Negócio
-        └── > 0 resultados → Abre Negócio (vincula ao ID existente)
+   Roteamento condicional
+        ├── 0 resultados → cria contato + abre negócio
+        └── > 0 resultados → abre negócio (vincula ao contato existente)
 ```
 
-**Inteligência anti-duplicação:** antes de criar qualquer registro, o fluxo busca o número no HubSpot. Se o contato já existir, apenas abre um novo negócio vinculado — o CRM nunca fica com cadastros repetidos.
+### Durante campanhas de tráfego pago
+
+Quando rodo campanhas no Meta Ads ou Google Ads, o volume de mensagens aumenta muito. O fluxo foi pensado exatamente para isso — aguenta qualquer volume sem criar duplicatas ou perder contato.
+
+**O que acontece em cada lead de campanha:**
+
+1. Lead clica no anúncio e manda mensagem no WhatsApp
+2. Evolution API captura a mensagem via webhook em tempo real
+3. Make busca o número no HubSpot antes de qualquer ação
+4. Se for novo: cria contato com nome, telefone e origem "WhatsApp" + abre negócio no pipeline
+5. Se já existir: só abre negócio novo vinculado ao contato — sem duplicar cadastro
+6. Corretor recebe o lead no CRM na hora, pronto para atender
 
 **Campos capturados automaticamente:**
 
 | Campo | Origem |
 |---|---|
-| Nome | `pushName` (nome do perfil WhatsApp) |
-| Telefone | `sender` (número com DDI) |
-| Origem | `WhatsApp` (fixo) |
+| Nome | `pushName` — nome do perfil no WhatsApp |
+| Telefone | `sender` — número com DDI |
+| Origem | "WhatsApp" (fixo) |
+| Data de entrada | Timestamp do evento |
 
-**Resultado:** todo contato que manda mensagem vira lead no CRM sem nenhuma ação manual.
+**Por que a lógica anti-duplicação é essencial em campanhas:**
+
+Em períodos de campanha ativa, o mesmo número pode mandar mais de uma mensagem — curiosidade, dúvida, retorno. Sem a busca prévia, cada mensagem criaria um contato novo e o CRM viraria uma bagunça. Com o roteamento condicional, o histórico fica limpo independente do volume.
 
 ---
 
-## 🛠️ Camada de Desenvolvimento Customizado
+## A camada de código por baixo
 
-Para garantir a comunicação entre o Google Apps Script e a Evolution API v2, foram desenvolvidos scripts com `UrlFetchApp` que automatizam o registro e ativação dos webhooks:
+Para conectar o Google Apps Script com a Evolution API v2, escrevi scripts que registram e ativam os webhooks via código — sem depender de painel visual.
 
 ```javascript
-// Registro de webhook via Apps Script
 function registrarWebhook() {
-  var url     = "https://sua-instancia.render.com/webhook/set/instancia";
+  var url = "https://sua-instancia.render.com/webhook/set/instancia";
+  
   var payload = {
     webhook: {
       enabled: true,
@@ -130,57 +154,45 @@ function registrarWebhook() {
 }
 ```
 
-**O que os scripts fazem:**
-- Registro de webhooks na Evolution API v2 via `POST`
-- Ativação de instâncias com payloads JSON estruturados
-- Tratamento de erros HTTP (correção de retornos `404`)
-- Gerenciamento de cabeçalhos e chaves de autenticação
+Isso me deu controle total sobre o registro — consigo reativar o webhook, trocar a URL de destino ou mudar os eventos sem precisar abrir a interface da Evolution API.
 
 ---
 
-## 🧠 Competências Técnicas Aplicadas
+## O que aprendi construindo esses fluxos
 
-| Competência | Como foi aplicada |
-|---|---|
-| Arquitetura híbrida | No-Code (Make) + código próprio (JavaScript / Apps Script) |
-| Consumo de APIs REST | Requisições GET e POST com headers, autenticação e tratamento de retorno |
-| Lógica condicional | Router no Make com filtros por `Total number of bundles` |
-| Variáveis dinâmicas | `sender`, `pushName`, `Record ID` mapeados entre sistemas em tempo real |
-| Anti-duplicação | Busca prévia no HubSpot antes de qualquer criação de registro |
-| Engenharia de processos | Problema analógico de negócio → solução automatizada escalável |
+**Webhooks não são mágica.** No começo achei complexo, mas é simples: você registra uma URL e avisa o sistema "quando acontecer X, manda os dados pra cá". O trabalho real é tratar o que chega.
+
+**A ordem das operações importa.** No Fluxo 3, se eu criasse o contato antes de buscar, teria duplicatas. Buscar primeiro, criar depois — essa sequência é o que faz o sistema funcionar bem em escala.
+
+**No-code e código se complementam.** O Make cuida da orquestração visual. O Apps Script cuida do que o Make não consegue fazer nativamente. Juntos, cobrem praticamente qualquer automação de negócio.
+
+**Testar em produção com cautela.** Aprendi a usar números de teste antes de ativar qualquer webhook num ambiente real. Um erro numa campanha ativa pode perder leads.
 
 ---
 
-## 🔧 Stack Técnica
+## Stack desse módulo
 
 | Ferramenta | Função |
 |---|---|
-| Make (Integromat) | Orquestração de todos os cenários |
+| Make (Integromat) | Orquestração de todos os fluxos |
 | Evolution API v2 | Interface com WhatsApp Business |
 | HubSpot CRM | Gestão de contatos, negócios e funil |
-| Google Sheets | Banco de dados operacional da corretora |
-| Google Apps Script | Registro e ativação de webhooks |
+| Google Sheets | Base de dados operacional |
+| Google Apps Script | Registro de webhooks e automações customizadas |
 | Render.com | Hospedagem da Evolution API |
-| Webhooks | Comunicação em tempo real entre sistemas |
 
 ---
 
-## 📁 Estrutura de Arquivos
+## Estrutura de arquivos
 
 ```
 make-integracoes/
 ├── README.md
-├── fluxo-1-hubspot-sheets.md       # Venda fechada → planilha
-├── fluxo-2-formulario-hubspot.md   # Formulário do site → CRM + planilha
-└── fluxo-3-whatsapp-hubspot.md     # WhatsApp → CRM (com anti-duplicação)
+├── fluxo-1-hubspot-sheets.md
+├── fluxo-2-formulario-hubspot.md
+└── fluxo-3-whatsapp-hubspot.md
 ```
 
 ---
 
-## 📸 Preview
-
-> *Prints dos fluxos do Make em breve*
-
----
-
-*Parte do projeto [automatizando-corretora-do-zero](https://github.com/luquette-dev/automatizando-corretora-do-zero)*
+Parte do projeto **[automatizando-corretora-do-zero](https://github.com/luquette-dev/automatizando-corretora-do-zero)**
